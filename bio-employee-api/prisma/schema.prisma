@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String  @id @default(cuid())
+  email    String  @unique
+  name     String?
+  password String
+  role     Role?   @default(USER)
+
+  bio Bio?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Bio {
+  id                  String  @id @default(cuid())
+  jobApplied          String
+  ktp                 String
+  placeDateBirth      String
+  gender              String
+  religion            String
+  bloodType           String
+  status              String
+  address             String
+  currentAddress      String
+  phone               String
+  closestPersonPhone  String
+  skills              String
+  availableEverywhere Boolean @default(false)
+  expectedSalary      Int
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  educations Education[]
+  trainings Training[]
+  experiences Experience[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Education {
+  id          String   @id @default(cuid())
+  level       String
+  name        String
+  major       String
+  graduatedAt String
+  gpa         Float?
+
+  bioId String
+  bio   Bio   @relation(fields: [bioId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Experience {
+  id          String   @id @default(cuid())
+  company     String
+  position    String
+  year       String
+  salary      Int?
+
+  bioId String
+  bio   Bio   @relation(fields: [bioId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Training {
+  id            String   @id @default(cuid())
+  name          String
+  isCertificate Boolean
+  year          String
+
+  bioId String
+  bio   Bio   @relation(fields: [bioId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
